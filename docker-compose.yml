@@ -35,3 +35,5 @@ services:
     environment:
       - 'POSTGRES_USER=postgres'
       - 'POSTGRES_PASSWORD=postgres'
+      # localhost以外でpostgresを動かす場合に次の記述が必要
+      - 'POSTGRES_HOST_AUTH_METHOD=trust'
