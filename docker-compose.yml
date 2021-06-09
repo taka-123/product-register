@@ -1,0 +1,37 @@
+version: '3'
+
+# ④ ③用のdockervolumeを作成する。（dockerの新しい概念。）
+volumes:
+  db-data:
+
+services:
+  web:
+    build: .
+    ports:
+      - '3000:3000'
+    volumes:
+      - '.:/product-register'
+    # ⑤ 環境変数を定義。（先のdatabase.ymlのpasswordで、参照させているのでその内容を記載。）
+    # 本当に秘密にしておくべき内容は、ここも絶対ベタ書きにしない！！ さらに環境変数を参照するように設定。
+    environment:
+      - 'DATABASE_PASSWORD=postgres'
+    tty: true
+    stdin_open: true
+    # ⑥ 下記dbサービスに依存することを明記し、先にdbから作成し、完成してからrunするように。（docker-composeの概念）
+    depends_on:
+      - db
+    # ⑦ このwebサービスからdbサービスにアクセスできるようにする。（docker-composeの概念）
+    links:
+      - db
+
+  # ① 名前は何でも良いが、ほとんどの場合、DBにする。
+  db:
+    # ② Dockerfileからではなく、postgresというイメージを使う。（今回はバージョン指定無し。）
+    image: postgres
+    # ③ コンテナを消した時に、DBも消えるのは問題がある。 → ホストのvolumeに、コンテナのPostgresのデータが保存されるファイルシステムを保存する。
+    volumes:
+      - 'db-data:/var/lib/postgresql/data'
+    # もしdbのコンテナがどうしてもupにならない場合は，以下をdocker-compose.ymlのdbのserviceに追加してみてください．
+    environment:
+      - 'POSTGRES_USER=postgres'
+      - 'POSTGRES_PASSWORD=postgres'
