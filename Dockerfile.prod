@@ -1,0 +1,15 @@
+FROM ruby:2.5
+RUN apt-get update && apt-get install -y \
+		build-essential \
+		libpq-dev \
+		nodejs \
+		postgresql-client \
+		yarn
+WORKDIR /product-register
+COPY Gemfile Gemfile.lock /product-register/
+RUN bundle install
+# カレントディレクトリのコードをすべてコンテナに移す。
+# 開発のときは、ホストにコードを置いてマウントを行っていたが、本番では全てコンテナで完結させるのが一般的。
+COPY . .
+# RUNした時、railsが起動し、アプリが動くように。
+CMD ["rails", "s"]
