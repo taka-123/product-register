@@ -13,20 +13,20 @@ script:
   - docker-compose exec --env 'RAILS_ENV=test' web rails db:migrate
   - docker-compose exec --env 'RAILS_ENV=test' web rails test
 
-deploy:
-  # 通常は、herokuで良いが、Dockerを使うのでscriptにしている。(travisの内容なので理解できてなくてもOK)
-  provider: script
-  script:
-    # ②本番環境用のDockerfileをビルド(image作成)
-    # アプリ名は何度も使うので、環境変数としてTravis CIに登録し、それを使う。
-    # -fオプションで、Dockerfileという名前でなくてもビルドするようにしている。
-    docker build -t registry.heroku.com/$HEROKU_APP_NAME/web -f Dockerfile.prod .;
-    # ③HerokuのDockerレジストリに本番環境用imageをpush
-    docker push registry.heroku.com/$HEROKU_APP_NAME/web;
-    # ④アプリ起動
-    # --appオプションで、どのアプリをRUNするか指定。
-    heroku run --app $HEROKU_APP_NAME rails db:migrate;
-  # ※deployは、「masterにmergeされたときだけ」にする。
-  # どのCIでも有る機能。一般的にやることなので、覚えておくべき！
-  on:
-    branch: master
+# deploy:
+#   # 通常は、herokuで良いが、Dockerを使うのでscriptにしている。(travisの内容なので理解できてなくてもOK)
+#   provider: script
+#   script:
+#     # ②本番環境用のDockerfileをビルド(image作成)
+#     # アプリ名は何度も使うので、環境変数としてTravis CIに登録し、それを使う。
+#     # -fオプションで、Dockerfileという名前でなくてもビルドするようにしている。
+#     docker build -t registry.heroku.com/$HEROKU_APP_NAME/web -f Dockerfile.prod .;
+#     # ③HerokuのDockerレジストリに本番環境用imageをpush
+#     docker push registry.heroku.com/$HEROKU_APP_NAME/web;
+#     # ④アプリ起動
+#     # --appオプションで、どのアプリをRUNするか指定。
+#     heroku run --app $HEROKU_APP_NAME rails db:migrate;
+#   # ※deployは、「masterにmergeされたときだけ」にする。
+#   # どのCIでも有る機能。一般的にやることなので、覚えておくべき！
+#   on:
+#     branch: master
